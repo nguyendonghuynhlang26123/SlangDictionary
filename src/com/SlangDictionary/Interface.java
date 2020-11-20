@@ -3,10 +3,13 @@ package com.SlangDictionary;/*
     @date 11/19/20
 */
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
-import java.util.HashMap;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import com.InterfaceCardPanel.SearchBySlangCard;
 
 public class Interface {
     private static final String[] buttonLabels = {
@@ -18,32 +21,12 @@ public class Interface {
             "Random a Slang word",
             "Slang quiz"
     };
-    private static HashMap<String, String> map = null;
+    private static MapController map = null;
 
     public static void addSearchBySlangCard(Container pane) {
-        JPanel card = new JPanel();
-        card.setLayout(new BorderLayout());
-
-        JPanel inputPanel = new JPanel();
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
-        JTextField textInput = new JTextField(30);
-        textInput.setFont(new Font("SF Mono", Font.PLAIN,18));
-        JLabel inputLabel = new JLabel("Input slang word: ");
-        textInput.setBorder(BorderFactory.createLineBorder(Color.red));
-        inputPanel.add(inputLabel);
-        inputPanel.add(textInput);
-
-        JPanel descPanel = new JPanel();
-        descPanel.setAlignmentX(0);
-        descPanel.setLayout(new FlowLayout());
-        JLabel descLabel = new JLabel("Description: ");
-        JLabel definition = new JLabel("Happy");
-        descPanel.add(descLabel);
-        descPanel.add(definition);
-
-        card.add(inputPanel, BorderLayout.PAGE_START);
-        card.add(descPanel, BorderLayout.CENTER);
+        SearchBySlangCard card = new SearchBySlangCard();
         pane.add(card);
+        card.setMapController(map);
     }
 
     public static void addComponentsToPane(Container pane){
@@ -81,9 +64,12 @@ public class Interface {
         frame.pack();
         frame.setVisible(true);
     }
+
     public static void main(String[] args) {
         UIManager.put("Label.font", new Font("Helvetica Neue", Font.PLAIN,20));
         UIManager.put("Button.font", new Font("SF Mono", Font.BOLD,18));
+
+        map = new MapController();
 
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
