@@ -12,7 +12,8 @@ import java.util.Scanner;
 public class ReadDB {
     public static final String FILE_PATH = "./assets/files/base.txt";
     public static HashMap<String, String> map = new HashMap<>();
-    public static void main(String[] args) throws IOException {
+
+    public void setDictionary(HashMap<String, String> map) throws IOException {
         FileInputStream inputStream = null;
         Scanner sc = null;
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
