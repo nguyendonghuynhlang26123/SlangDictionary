@@ -47,7 +47,7 @@ public class SearchBySlangCard extends JPanel {
         inputBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                String def = map.getDefinition(textInput.getText());
+                String def = map.getDefinitionWithRecord(textInput.getText());
                 if (!def.equals("")) definition.setText(def);
                 else definition.setText("Not Found!!");
             }

@@ -15,12 +15,6 @@ public class AddSlangCard extends JPanel {
     private JTextField newSlangInput = null;
     private JTextArea descInput = null;
     private JButton submitBtn = null;
-    private final JOptionPane optionPane = new JOptionPane(
-            "This slang word is existed\n"
-            + "Overwrite?",
-            JOptionPane.QUESTION_MESSAGE,
-            JOptionPane.YES_NO_OPTION);
-
     public AddSlangCard() {
         setLayout(new BorderLayout());
 
@@ -35,6 +29,8 @@ public class AddSlangCard extends JPanel {
 
         JPanel descPanel = new JPanel();
         descInput = new JTextArea(3, 20);
+        descInput.setLineWrap(true);
+        descInput.setWrapStyleWord(true);
         descInput.setFont(new Font("SF Mono", Font.PLAIN, 18));
         JLabel descLabel = new JLabel("Meaning: ");
         descInput.setBorder(BorderFactory.createLineBorder(Color.red));
@@ -93,7 +89,6 @@ public class AddSlangCard extends JPanel {
                             "Successfully add this word",
                             "Status",
                             JOptionPane.INFORMATION_MESSAGE);
-                    System.out.print(map.getDefinition(slang));
                 }
                 else{
                     JOptionPane.showMessageDialog(frame,

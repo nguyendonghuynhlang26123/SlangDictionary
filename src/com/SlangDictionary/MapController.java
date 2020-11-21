@@ -47,8 +47,11 @@ public class MapController {
                 String[] splited = line.split("`", 0);
 
                 if (splited.length == 2) {
-                    if (map.containsKey(splited[0])){
+                    if (map.containsKey(splited[0]) && !splited[1].equals("~")){
                         map.replace(splited[0].toLowerCase(), splited[1]);
+                    }
+                    else if (map.containsKey(splited[0])){
+                        map.remove(splited[0]);
                     }
                     else{
                         keys.add(splited[0].toLowerCase());
@@ -80,7 +83,7 @@ public class MapController {
         return map.containsKey(slang.toLowerCase());
     }
 
-    public String getDefinition(String slang){
+    public String getDefinitionWithRecord(String slang){
         String key = slang.toLowerCase();
         if (map.containsKey(key)){
             String description =  map.get(key);
@@ -90,6 +93,11 @@ public class MapController {
 
         history.add(slang + " - " + "Not found");
         return "";
+    }
+
+    public String getDefinition(String slang){
+        String key = slang.toLowerCase();
+        return hasKey(key) ? map.get(key) : "";
     }
 
     public String[] getHistory() {
@@ -110,6 +118,18 @@ public class MapController {
         return arr.toArray(new String[n]);
     }
 
+    private boolean fileWriteHelper(String data){
+        try {
+            FileOutputStream fout = new FileOutputStream(ASSETS_FILES_EX_TXT, true);
+            fout.write(data.getBytes(),0,data.length());
+            fout.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
     public boolean addToExFile(String slang, String mean){
         String data = '\n' + slang + '`' + mean;
         String key = slang.toLowerCase();
@@ -120,15 +140,14 @@ public class MapController {
         }
         else map.put(key, mean);
 
-        try {
-            FileOutputStream fout = new FileOutputStream(ASSETS_FILES_EX_TXT, true);
-            fout.write(data.getBytes(),0,data.length());
-            fout.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return fileWriteHelper(data);
+    }
 
-        return true;
+    public boolean removeAWord(String slang){
+        slang = slang.toLowerCase();
+        if (!map.containsKey(slang)) return false;
+        keys.remove(slang);
+        map.remove(slang);
+        return fileWriteHelper('\n'+ slang +"`~");
     }
 }

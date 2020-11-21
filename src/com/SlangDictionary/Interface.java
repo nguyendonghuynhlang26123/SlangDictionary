@@ -5,6 +5,7 @@ package com.SlangDictionary;/*
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +16,9 @@ import java.util.concurrent.Callable;
 import com.InterfaceCardPanel.*;
 
 public class Interface {
+    private static int selected = 0;
+    private static final Color primaryColor = Color.decode("#aee6e6");
+    private static final Color secondaryColor = Color.decode("#fbf6f0");
     private static final String[] buttonLabels = {
             "Search by Slang word",
             "Search by Definition",
@@ -52,6 +56,14 @@ public class Interface {
         pane.add(card, buttonLabels[3]);
     }
 
+    public static void addEditNewSlangCard(Container pane) {
+        EditSlangCard card = new EditSlangCard();
+
+        card.addActionEvent(map);
+
+        pane.add(card, buttonLabels[4]);
+    }
+
     public static void addComponentsToPane(Container pane){
         pane.setLayout(new BorderLayout());
         pane.setSize(new Dimension(500,600 ));
@@ -62,23 +74,22 @@ public class Interface {
         //Panel 2:
         JPanel mainPanel = new JPanel(new CardLayout());
 
-        for (String buttonLabel : buttonLabels) {
+        for (int i = 0; i < buttonLabels.length; i++) {
+            String buttonLabel = buttonLabels[i];
+            final int indx = i;
             JButton newBtn = new JButton(buttonLabel);
             newBtn.setMargin(new Insets(15, 15, 15, 15));
             newBtn.setMaximumSize(new Dimension(100, 50));
+            if (buttonLabel.equals(buttonLabels[selected]))
+                newBtn.setBackground(secondaryColor);
+            else newBtn.setBackground(primaryColor);
+
             newBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent event) {
-                    Object o = event.getSource();
-                    JButton b = null;
-                    String buttonText = "";
-
-                    if(o instanceof JButton)
-                        b = (JButton)o;
-
-                    if(b != null)
-                        buttonText = b.getText();
-
+                    sidebar.getComponent(selected).setBackground(primaryColor);
+                    ((Component)event.getSource()).setBackground(secondaryColor);
+                    selected = indx;
                     CardLayout cl = (CardLayout )(mainPanel.getLayout());
                     cl.show(mainPanel, buttonLabel);
                 }
@@ -89,6 +100,7 @@ public class Interface {
         addSearchBySlangCard(mainPanel);
         addHistoryCard(mainPanel);
         addAddingNewSlangCard(mainPanel);
+        addEditNewSlangCard(mainPanel);
 
         pane.add(sidebar, BorderLayout.LINE_START);
         pane.add(mainPanel, BorderLayout.CENTER);
@@ -110,7 +122,6 @@ public class Interface {
     public static void main(String[] args) {
         UIManager.put("Label.font", new Font("Helvetica Neue", Font.PLAIN,20));
         UIManager.put("Button.font", new Font("SF Mono", Font.BOLD,18));
-
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
