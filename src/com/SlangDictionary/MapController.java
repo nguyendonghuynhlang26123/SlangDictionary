@@ -36,7 +36,7 @@ public class MapController {
                     System.out.println(Arrays.toString(splited));
                     System.out.println(line);
                 } else {
-                    map.put(splited[0], new VocabInfo(lineCount, splited[1]));
+                    map.put(splited[0].toLowerCase(), new VocabInfo(lineCount, splited[1]));
                 }
                 lineCount++;
             }
@@ -59,8 +59,9 @@ public class MapController {
     }
 
     public String getDefinition(String slang){
-        if (map.containsKey(slang)){
-            String description =  map.get(slang).mdesc;
+        String key = slang.toLowerCase();
+        if (map.containsKey(key)){
+            String description =  map.get(key).mdesc;
             history.add(slang + " - " + description);
             return description;
         }

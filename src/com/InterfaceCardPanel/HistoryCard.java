@@ -8,9 +8,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.sql.Array;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 public class HistoryCard extends JPanel {
@@ -22,7 +19,7 @@ public class HistoryCard extends JPanel {
         setBorder(BorderFactory.createLineBorder(Color.red));
         list = new JList<>(model);
         list.setFixedCellHeight(50);
-        list.setBorder(new EmptyBorder(10,10, 10, 10));
+
         list.setCellRenderer(new MyCellRenderer());
         list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         list.setLayoutOrientation(JList.VERTICAL);
@@ -56,6 +53,7 @@ public class HistoryCard extends JPanel {
 class MyCellRenderer extends JLabel implements ListCellRenderer<Object> {
     public MyCellRenderer() {
         setFont(new Font("Helvetica Neue", Font.PLAIN,18));
+        setBorder(new EmptyBorder(10,10, 10, 10));
         setOpaque(true);
     }
 
