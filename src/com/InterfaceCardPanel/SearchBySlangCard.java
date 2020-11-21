@@ -23,7 +23,6 @@ public class SearchBySlangCard extends JPanel {
         textInput = new JTextField(20);
         textInput.setFont(new Font("SF Mono", Font.PLAIN,18));
         JLabel inputLabel = new JLabel("Input slang word: ");
-        textInput.setBorder(BorderFactory.createLineBorder(Color.red));
         inputBtn = new JButton();
         inputBtn.setIcon(new ImageIcon("./assets/icons/ic_search.png"));
         inputBtn.setPreferredSize(new Dimension(50,26));
@@ -48,8 +47,14 @@ public class SearchBySlangCard extends JPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 String def = map.getDefinitionWithRecord(textInput.getText());
-                if (!def.equals("")) definition.setText(def);
-                else definition.setText("Not Found!!");
+                if (!def.equals("")) {
+                    textInput.setBorder(BorderFactory.createLineBorder(Color.black));
+                    definition.setText(def);
+                }
+                else {
+                    textInput.setBorder(BorderFactory.createLineBorder(Color.red));
+                    definition.setText("Not Found!!");
+                }
             }
         });
 
