@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 import com.InterfaceCardPanel.*;
@@ -27,8 +28,9 @@ public class Interface {
 
     public static void addSearchBySlangCard(Container pane) {
         SearchBySlangCard card = new SearchBySlangCard();
-        pane.add(card);
         card.setMapController(map);
+
+        pane.add(card, buttonLabels[0]);
     }
 
     public static void addHistoryCard(Container panel){
@@ -39,7 +41,15 @@ public class Interface {
             }
         });
 
-        panel.add(card);
+        panel.add(card, buttonLabels[2]);
+    }
+
+    public static void addAddingNewSlangCard(Container pane) {
+        AddSlangCard card = new AddSlangCard();
+
+        card.addActionEvent(map);
+
+        pane.add(card, buttonLabels[3]);
     }
 
     public static void addComponentsToPane(Container pane){
@@ -69,8 +79,8 @@ public class Interface {
                     if(b != null)
                         buttonText = b.getText();
 
-                    CardLayout cl = (CardLayout)(mainPanel.getLayout());
-                    cl.next(mainPanel);
+                    CardLayout cl = (CardLayout )(mainPanel.getLayout());
+                    cl.show(mainPanel, buttonLabel);
                 }
             });
             sidebar.add(newBtn);
@@ -78,13 +88,13 @@ public class Interface {
 
         addSearchBySlangCard(mainPanel);
         addHistoryCard(mainPanel);
+        addAddingNewSlangCard(mainPanel);
 
         pane.add(sidebar, BorderLayout.LINE_START);
         pane.add(mainPanel, BorderLayout.CENTER);
     }
 
-    private static void createAndShowGUI()
-    {
+    private static void createAndShowGUI(){
         //JFrame.setDefaultLookAndFeelDecorated(true);
         JFrame frame = new JFrame("District Interface");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -101,11 +111,10 @@ public class Interface {
         UIManager.put("Label.font", new Font("Helvetica Neue", Font.PLAIN,20));
         UIManager.put("Button.font", new Font("SF Mono", Font.BOLD,18));
 
-        map = new MapController();
-
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
+                map = new MapController();
                 createAndShowGUI();
             }
         });
