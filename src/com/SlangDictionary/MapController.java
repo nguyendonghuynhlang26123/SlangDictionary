@@ -5,12 +5,14 @@ package com.SlangDictionary;/*
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class MapController {
     public static final String FILE_PATH = "./assets/files/base.txt";
+    private ArrayList<String> history = null;
     private static HashMap<String, VocabInfo> map = null;
     public class VocabInfo {
         int mline;
@@ -48,6 +50,7 @@ public class MapController {
     }
 
     MapController(){
+        history = new ArrayList<>();
         try{
             readDictionary();
         } catch (IOException e) {
@@ -56,9 +59,19 @@ public class MapController {
     }
 
     public String getDefinition(String slang){
-        if (map.containsKey(slang))
-            return map.get(slang).mdesc;
+        if (map.containsKey(slang)){
+            String description =  map.get(slang).mdesc;
+            history.add(slang + " - " + description);
+            return description;
+        }
 
+        history.add(slang + " - " + "Not found");
         return "";
     }
+
+    public String[] getHistory() {
+        String[] arr = new String[history.size()];
+        return history.toArray(arr);
+    }
+
 }

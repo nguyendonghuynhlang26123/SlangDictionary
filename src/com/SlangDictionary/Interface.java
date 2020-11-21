@@ -9,7 +9,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import com.InterfaceCardPanel.SearchBySlangCard;
+import java.util.concurrent.Callable;
+
+import com.InterfaceCardPanel.*;
 
 public class Interface {
     private static final String[] buttonLabels = {
@@ -29,6 +31,17 @@ public class Interface {
         card.setMapController(map);
     }
 
+    public static void addHistoryCard(Container panel){
+        HistoryCard card = new HistoryCard(new Callable<String[]>() {
+            @Override
+            public String[] call() throws Exception {
+                return map.getHistory();
+            }
+        });
+
+        panel.add(card);
+    }
+
     public static void addComponentsToPane(Container pane){
         pane.setLayout(new BorderLayout());
         pane.setSize(new Dimension(500,600 ));
@@ -36,16 +49,35 @@ public class Interface {
         //Panel 1:
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new GridLayout(0, 1));
+        //Panel 2:
+        JPanel mainPanel = new JPanel(new CardLayout());
+
         for (String buttonLabel : buttonLabels) {
             JButton newBtn = new JButton(buttonLabel);
             newBtn.setMargin(new Insets(15, 15, 15, 15));
             newBtn.setMaximumSize(new Dimension(100, 50));
+            newBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent event) {
+                    Object o = event.getSource();
+                    JButton b = null;
+                    String buttonText = "";
+
+                    if(o instanceof JButton)
+                        b = (JButton)o;
+
+                    if(b != null)
+                        buttonText = b.getText();
+
+                    CardLayout cl = (CardLayout)(mainPanel.getLayout());
+                    cl.next(mainPanel);
+                }
+            });
             sidebar.add(newBtn);
         }
 
-        //Panel 2:
-        JPanel mainPanel = new JPanel(new CardLayout());
         addSearchBySlangCard(mainPanel);
+        addHistoryCard(mainPanel);
 
         pane.add(sidebar, BorderLayout.LINE_START);
         pane.add(mainPanel, BorderLayout.CENTER);
