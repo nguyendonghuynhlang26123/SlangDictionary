@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.concurrent.Callable;
 
 import com.InterfaceCardPanel.*;
@@ -25,8 +26,8 @@ public class Interface {
             "Search history",
             "Add a new Slang Word",
             "Modify existing Slang Word",
-            "Random a Slang word",
-            "Slang quiz"
+            "Slang quiz 1",
+            "Slang quiz 2"
     };
     private static MapController map = null;
 
@@ -62,6 +63,25 @@ public class Interface {
         card.addActionEvent(map);
 
         pane.add(card, buttonLabels[4]);
+    }
+
+    public static void addSlangQuizCard(Container pane) {
+        SlangQuizCard card = new SlangQuizCard(new Callable<String[]>() {
+            @Override
+            public String[] call() throws Exception {
+                String[] data = new String[5];
+                String[] keys = map.getRandomKeys(4);
+                int randomIdx = new Random().nextInt(4);
+
+                data[0] = randomIdx + "," + keys[randomIdx];
+                for (int i = 0; i < 4; i++) {
+                    data[i+1] = map.getDefinition(keys[i]);
+                }
+                return data;
+            }
+        });
+
+        pane.add(card, buttonLabels[5]);
     }
 
 
@@ -115,6 +135,7 @@ public class Interface {
         addHistoryCard(mainPanel);
         addAddingNewSlangCard(mainPanel);
         addEditNewSlangCard(mainPanel);
+        addSlangQuizCard(mainPanel);
 
         pane.add(sidebar, BorderLayout.LINE_START);
         pane.add(mainPanel, BorderLayout.CENTER);
