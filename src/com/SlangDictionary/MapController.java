@@ -107,7 +107,6 @@ public class MapController {
 
     public String[] getRandomKeys(int n){
         ArrayList<String> arr = new ArrayList<>();
-        System.out.print(keys.size());
 
         for (int i = 0; i < n; i++) {
             String randomKey = keys.get(new Random().nextInt(keys.size()));

@@ -64,6 +64,7 @@ public class Interface {
         pane.add(card, buttonLabels[4]);
     }
 
+
     public static void addComponentsToPane(Container pane){
         pane.setLayout(new BorderLayout());
         pane.setSize(new Dimension(500,600 ));
@@ -96,6 +97,19 @@ public class Interface {
             });
             sidebar.add(newBtn);
         }
+
+        JButton resetBtn = new JButton("Reset Dictionary");
+        resetBtn.setBackground(Color.decode("#ffa45b"));
+        resetBtn.setForeground(Color.white);
+        resetBtn.setMargin(new Insets(15, 15, 15, 15));
+        resetBtn.setMaximumSize(new Dimension(100, 50));
+        resetBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+            }
+        });
+        sidebar.add(resetBtn);
 
         addSearchBySlangCard(mainPanel);
         addHistoryCard(mainPanel);

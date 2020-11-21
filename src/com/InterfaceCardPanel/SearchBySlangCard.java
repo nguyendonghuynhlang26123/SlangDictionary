@@ -13,6 +13,7 @@ import com.SlangDictionary.MapController;
 public class SearchBySlangCard extends JPanel {
     private JTextField textInput = null;
     private JButton inputBtn = null;
+    private JButton randomBtn = null;
     private JLabel definition = null;
 
     public SearchBySlangCard(){
@@ -26,9 +27,14 @@ public class SearchBySlangCard extends JPanel {
         inputBtn = new JButton();
         inputBtn.setIcon(new ImageIcon("./assets/icons/ic_search.png"));
         inputBtn.setPreferredSize(new Dimension(50,26));
+        randomBtn = new JButton();
+        randomBtn.setIcon(new ImageIcon("./assets/icons/ic_dice.png"));
+        randomBtn.setPreferredSize(new Dimension(50,26));
+        randomBtn.setToolTipText("Randomly generate an icon");
         inputPanel.add(inputLabel);
         inputPanel.add(textInput);
         inputPanel.add(inputBtn);
+        inputPanel.add(randomBtn);
 
         JPanel descPanel = new JPanel();
         descPanel.setAlignmentX(0);
@@ -55,6 +61,16 @@ public class SearchBySlangCard extends JPanel {
                     textInput.setBorder(BorderFactory.createLineBorder(Color.red));
                     definition.setText("Not Found!!");
                 }
+            }
+        });
+
+        randomBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String randomKey = map.getRandomKeys(1)[0];
+                textInput.setText(randomKey);
+                textInput.setBorder(BorderFactory.createLineBorder(Color.black));
+                definition.setText(map.getDefinition(randomKey));
             }
         });
 
