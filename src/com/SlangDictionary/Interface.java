@@ -81,6 +81,7 @@ public class Interface {
             }
         });
 
+        card.addActionEvent(map);
         pane.add(card, buttonLabels[5]);
     }
 
