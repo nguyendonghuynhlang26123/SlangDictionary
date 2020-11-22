@@ -12,13 +12,13 @@ import java.awt.event.ActionListener;
 import java.util.concurrent.Callable;
 
 public class SlangQuizCard extends JPanel {
-    private final int LINE_SIZE = 15;
+    private final int LINE_SIZE = 10;
     private JLabel quizLabel = null;
     private JLabel countLabel = null;
     private JLabel quizQuestion = null;
     private JButton[] btns = new JButton[4];
     private String[] data = null;
-    private int answer = -1;
+    private String answer = "";
     private int answerCount = 1;
     private int rightAnsCount = 0;
     private Callable<String[]> getQuizData = null;
@@ -43,7 +43,7 @@ public class SlangQuizCard extends JPanel {
         try {
             String[] rawString = getQuizData.call();
             String[] temp = rawString[0].split(",");
-            answer = Integer.parseInt(temp[0]);
+            answer = temp[0];
             rawString[0] = temp[1];
             return rawString;
         } catch (Exception e) {
@@ -52,7 +52,7 @@ public class SlangQuizCard extends JPanel {
         }
     }
 
-    public SlangQuizCard(Callable<String[]> generateKeys){
+    public SlangQuizCard(String label, Callable<String[]> generateKeys){
         getQuizData = generateKeys;
         data = getKeysAndAnswer();
         if (data == null) add(new JLabel("ERROR"));
@@ -63,7 +63,7 @@ public class SlangQuizCard extends JPanel {
 
         JPanel quizContent = new JPanel();
         quizContent.setLayout(new BorderLayout());
-        quizQuestion = new JLabel("<html>What is the definition of <b>"
+        quizQuestion = new JLabel("<html>What is the " + label + " for <b>"
                 + data[0] + "</b>?</html>", SwingConstants.CENTER);
         quizContent.setAlignmentX(CENTER_ALIGNMENT);
         JPanel answerPanel = new JPanel();
@@ -115,19 +115,19 @@ public class SlangQuizCard extends JPanel {
     }
 
     public void addActionEvent(MapController map){
-        for (JButton btn : btns) {
+        for (int i = 0; i < btns.length; i++) {
+            JButton btn = btns[i];
+            int finalI = i;
             btn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
                     JButton btn = (JButton) actionEvent.getSource();
-                    String chosen = btn.getText();
 
-                    if (chosen.equals(btns[answer].getText())) {
+                    if (data[finalI+1].equals(answer)) {
                         popup("Amazing! You get it right!\n");
                         rightAnsCount++;
                     }
-                    else popup("Wrong answer!\nDefinition of "
-                                + data[0] + " is " + map.getDefinition(data[0]));
+                    else popup("Wrong answer!\nThe answer is " + answer);
                     changeQuiz();
                 }
             });

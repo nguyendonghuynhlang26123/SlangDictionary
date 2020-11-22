@@ -66,14 +66,14 @@ public class Interface {
     }
 
     public static void addSlangQuizCard(Container pane) {
-        SlangQuizCard card = new SlangQuizCard(new Callable<String[]>() {
+        SlangQuizCard card = new SlangQuizCard("definition", new Callable<String[]>() {
             @Override
             public String[] call() throws Exception {
                 String[] data = new String[5];
                 String[] keys = map.getRandomKeys(4);
                 int randomIdx = new Random().nextInt(4);
 
-                data[0] = randomIdx + "," + keys[randomIdx];
+                data[0] = map.getDefinition(keys[randomIdx]) + "," + keys[randomIdx];
                 for (int i = 0; i < 4; i++) {
                     data[i+1] = map.getDefinition(keys[i]);
                 }
@@ -83,6 +83,26 @@ public class Interface {
 
         card.addActionEvent(map);
         pane.add(card, buttonLabels[5]);
+    }
+
+    public static void addSlangQuiz2Card(Container pane) {
+        SlangQuizCard card = new SlangQuizCard("slang word", new Callable<String[]>() {
+            @Override
+            public String[] call() throws Exception {
+                String[] data = new String[5];
+                String[] keys = map.getRandomKeys(4);
+                int randomIdx = new Random().nextInt(4);
+
+                data[0] = keys[randomIdx] + "," + map.getDefinition(keys[randomIdx]);
+                for (int i = 0; i < 4; i++) {
+                    data[i+1] = keys[i];
+                }
+                return data;
+            }
+        });
+
+        card.addActionEvent(map);
+        pane.add(card, buttonLabels[6]);
     }
 
 
@@ -137,6 +157,7 @@ public class Interface {
         addAddingNewSlangCard(mainPanel);
         addEditNewSlangCard(mainPanel);
         addSlangQuizCard(mainPanel);
+        addSlangQuiz2Card(mainPanel);
 
         pane.add(sidebar, BorderLayout.LINE_START);
         pane.add(mainPanel, BorderLayout.CENTER);
