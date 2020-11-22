@@ -12,13 +12,16 @@ import java.util.*;
 public class MapController {
     public static final String ASSETS_FILES_BASE_TXT = "./assets/files/base.txt";
     public static final String ASSETS_FILES_EX_TXT = "./assets/files/ex.txt";
+    public static final String FILE_HEADER = "Slang`Meaning";
     private ArrayList<String> history = null;
     private static HashMap<String, String> map = null;
     private static ArrayList<String> keys = null;
 
+    private static HashMap <String, ArrayList<String>> defList = null;
 
     public void readDictionary() throws IOException {
         map = new HashMap<>();
+        defList = new HashMap<>();
         keys = new ArrayList<>();
         try {
             FileInputStream baseIn = new FileInputStream(ASSETS_FILES_BASE_TXT);
@@ -34,6 +37,7 @@ public class MapController {
                 if (splited.length == 2) {
                     keys.add(splited[0].toLowerCase());
                     map.put(splited[0].toLowerCase(), splited[1]);
+                    addToDefList(splited[0],splited[1]);
                 }
             }
 
@@ -48,14 +52,18 @@ public class MapController {
 
                 if (splited.length == 2) {
                     if (map.containsKey(splited[0]) && !splited[1].equals("~")){
+                        removeFromDefList(splited[0],map.get(splited[0]));
+                        addToDefList(splited[0], splited[1]);
                         map.replace(splited[0].toLowerCase(), splited[1]);
                     }
                     else if (map.containsKey(splited[0])){
                         map.remove(splited[0]);
+                        removeFromDefList(splited[0],map.get(splited[0]));
                     }
                     else{
                         keys.add(splited[0].toLowerCase());
                         map.put(splited[0].toLowerCase(), splited[1]);
+                        removeFromDefList(splited[0],map.get(splited[0]));
                     }
                 }
             }
@@ -74,8 +82,40 @@ public class MapController {
         history = new ArrayList<>();
         try{
             readDictionary();
+            System.out.print(defList.size());
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void addToDefList(String slang, String def){
+        def = def.toLowerCase();
+        slang = slang.toLowerCase();
+        String[] words = def.split(" ");
+
+        for (String word : words) {
+            if (defList.containsKey(word)) {
+                if (!defList.get(word).contains(slang))
+                    defList.get(word).add(slang);
+            } else {
+                ArrayList<String> newList = new ArrayList<>();
+                newList.add(slang);
+                defList.put(word, newList);
+            }
+        }
+    }
+
+    public static void removeFromDefList(String slang, String mean){
+        slang = slang.toLowerCase();
+        mean = mean.toLowerCase();
+        String []words = mean.split(" ");
+
+        for (String word : words) {
+            if (defList.containsKey(word)){
+                defList.get(word).remove(slang);
+                if (defList.get(word).size() == 0)
+                    defList.remove(word);
+            }
         }
     }
 
@@ -148,5 +188,17 @@ public class MapController {
         keys.remove(slang);
         map.remove(slang);
         return fileWriteHelper('\n'+ slang +"`~");
+    }
+
+    public boolean resetExFile(){
+        try {
+            FileOutputStream fout = new FileOutputStream(ASSETS_FILES_EX_TXT, false);
+            fout.write(FILE_HEADER.getBytes(), 0, FILE_HEADER.length());
+            fout.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

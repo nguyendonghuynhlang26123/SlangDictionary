@@ -3,16 +3,9 @@ package com.SlangDictionary;/*
     @date 11/19/20
 */
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Random;
-import java.util.concurrent.Callable;
 
 import com.InterfaceCardPanel.*;
 
@@ -39,12 +32,7 @@ public class Interface {
     }
 
     public static void addHistoryCard(Container panel){
-        HistoryCard card = new HistoryCard(new Callable<String[]>() {
-            @Override
-            public String[] call() throws Exception {
-                return map.getHistory();
-            }
-        });
+        HistoryCard card = new HistoryCard(() -> map.getHistory());
 
         panel.add(card, buttonLabels[2]);
     }
@@ -66,19 +54,16 @@ public class Interface {
     }
 
     public static void addSlangQuizCard(Container pane) {
-        SlangQuizCard card = new SlangQuizCard("definition", new Callable<String[]>() {
-            @Override
-            public String[] call() throws Exception {
-                String[] data = new String[5];
-                String[] keys = map.getRandomKeys(4);
-                int randomIdx = new Random().nextInt(4);
+        SlangQuizCard card = new SlangQuizCard("definition", () -> {
+            String[] data = new String[5];
+            String[] keys = map.getRandomKeys(4);
+            int randomIdx = new Random().nextInt(4);
 
-                data[0] = map.getDefinition(keys[randomIdx]) + "," + keys[randomIdx];
-                for (int i = 0; i < 4; i++) {
-                    data[i+1] = map.getDefinition(keys[i]);
-                }
-                return data;
+            data[0] = map.getDefinition(keys[randomIdx]) + "," + keys[randomIdx];
+            for (int i = 0; i < 4; i++) {
+                data[i+1] = map.getDefinition(keys[i]);
             }
+            return data;
         });
 
         card.addActionEvent(map);
@@ -86,25 +71,42 @@ public class Interface {
     }
 
     public static void addSlangQuiz2Card(Container pane) {
-        SlangQuizCard card = new SlangQuizCard("slang word", new Callable<String[]>() {
-            @Override
-            public String[] call() throws Exception {
-                String[] data = new String[5];
-                String[] keys = map.getRandomKeys(4);
-                int randomIdx = new Random().nextInt(4);
+        SlangQuizCard card = new SlangQuizCard("slang word", () -> {
+            String[] data = new String[5];
+            String[] keys = map.getRandomKeys(4);
+            int randomIdx = new Random().nextInt(4);
 
-                data[0] = keys[randomIdx] + "," + map.getDefinition(keys[randomIdx]);
-                for (int i = 0; i < 4; i++) {
-                    data[i+1] = keys[i];
-                }
-                return data;
-            }
+            data[0] = keys[randomIdx] + "," + map.getDefinition(keys[randomIdx]);
+            System.arraycopy(keys, 0, data, 1, 4);
+            return data;
         });
 
         card.addActionEvent(map);
         pane.add(card, buttonLabels[6]);
     }
 
+    public static void addResetFunction(JFrame frame){
+        int res = JOptionPane.showConfirmDialog(frame,
+                "By clicking OK all of your additional data will be deleted!\nAre you sure about that?",
+                "Confirmation",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if(res == JOptionPane.YES_OPTION) {
+            boolean succeed = map.resetExFile();
+            if (succeed) {
+                JOptionPane.showMessageDialog(frame,
+                        "Successfully reset Slang Dictionary",
+                        "Status",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(frame,
+                        "Failed to reset Slang Dictionary!! Please try again",
+                        "Status",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
 
     public static void addComponentsToPane(Container pane){
         pane.setLayout(new BorderLayout());
@@ -126,15 +128,12 @@ public class Interface {
                 newBtn.setBackground(secondaryColor);
             else newBtn.setBackground(primaryColor);
 
-            newBtn.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent event) {
-                    sidebar.getComponent(selected).setBackground(primaryColor);
-                    ((Component)event.getSource()).setBackground(secondaryColor);
-                    selected = indx;
-                    CardLayout cl = (CardLayout )(mainPanel.getLayout());
-                    cl.show(mainPanel, buttonLabel);
-                }
+            newBtn.addActionListener(event -> {
+                sidebar.getComponent(selected).setBackground(primaryColor);
+                ((Component)event.getSource()).setBackground(secondaryColor);
+                selected = indx;
+                CardLayout cl = (CardLayout )(mainPanel.getLayout());
+                cl.show(mainPanel, buttonLabel);
             });
             sidebar.add(newBtn);
         }
@@ -144,11 +143,9 @@ public class Interface {
         resetBtn.setForeground(Color.white);
         resetBtn.setMargin(new Insets(15, 15, 15, 15));
         resetBtn.setMaximumSize(new Dimension(100, 50));
-        resetBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-
-            }
+        resetBtn.addActionListener(actionEvent -> {
+            JFrame frame = (JFrame) SwingUtilities.getRoot((Component) actionEvent.getSource());
+            addResetFunction(frame);
         });
         sidebar.add(resetBtn);
 
@@ -179,12 +176,9 @@ public class Interface {
     public static void main(String[] args) {
         UIManager.put("Label.font", new Font("Helvetica Neue", Font.PLAIN,20));
         UIManager.put("Button.font", new Font("SF Mono", Font.BOLD,18));
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                map = new MapController();
-                createAndShowGUI();
-            }
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            map = new MapController();
+            createAndShowGUI();
         });
     }
 
