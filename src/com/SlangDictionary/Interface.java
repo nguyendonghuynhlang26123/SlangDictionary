@@ -29,7 +29,9 @@ public class Interface {
     public static void addSearchBySlangCard(Container pane) {
         SearchCard card = new SearchCard(true);
         Function<String, String> getDefFn = (s) -> {
-            return map.getDefinitionWithRecord(s);
+            String def = map.getDefinitionWithRecord(s);
+            String result = String.join("<br/>+", def.split("\\|"));
+            return "<html>+" + result + "</html>" ;
         } ;
         Callable<String[]> getRandomValuesFn = () ->{
            String[] result = new String[2];

@@ -2,3 +2,6 @@ Slang`Meaning
 t`test is fun
 t`test is not fun
 t`~
+WC`Welcome| Water Closet| toilet| World Cup
+Test`Test is fun
+Test`Test is fun| Test is amazing

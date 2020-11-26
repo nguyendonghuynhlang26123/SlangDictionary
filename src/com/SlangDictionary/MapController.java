@@ -81,7 +81,6 @@ public class MapController {
     MapController(){
         history = new ArrayList<>();
         readDictionary();
-        System.out.print(defList.size());
     }
 
     private void addToDefList(String slang, String def){
@@ -141,7 +140,6 @@ public class MapController {
             if (retainSet != null) retainSet.retainAll(slangs);
             else retainSet = slangs;
         }
-        System.out.print(retainSet);
 
         //history.add(slang + " - " + "Not found");
         String[] result = new String[retainSet.size()];

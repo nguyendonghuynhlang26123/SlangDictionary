@@ -61,16 +61,19 @@ public class AddSlangCard extends JPanel {
                         JOptionPane.ERROR_MESSAGE);
             }
             else {
+                final String[] options = {"Overwrite", "Add duplicate", "Cancel"};
                 boolean res = map.hasKey(slang);
-                System.out.print(map.getDefinition(slang));
 
                 if (res){
-                    int c = JOptionPane.showConfirmDialog(
-                            frame,
-                            "This word is existed\nOverwrite?",
-                            "Confirmation",
-                            JOptionPane.YES_NO_OPTION);
-                    if (c == JOptionPane.YES_OPTION){
+                    int c = JOptionPane.showOptionDialog(null,
+                            "This slang word exists!\nChoose your option", "Existing word",
+                            JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
+                            null, options, options[0]);
+                    if (c == 0){
+                        succeed = map.addSlang(slang, mean);
+                    }
+                    else if (c == 1){
+                        mean = map.getDefinition(slang) + "| " + mean;
                         succeed = map.addSlang(slang, mean);
                     }
                 }
