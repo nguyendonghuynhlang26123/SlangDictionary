@@ -13,15 +13,15 @@ import java.util.concurrent.Callable;
 
 public class SlangQuizCard extends JPanel {
     private final int LINE_SIZE = 10;
-    private JLabel quizLabel = null;
-    private JLabel countLabel = null;
-    private JLabel quizQuestion = null;
+    private JLabel quizLabel;
+    private JLabel countLabel;
+    private JLabel quizQuestion;
     private JButton[] btns = new JButton[4];
-    private String[] data = null;
+    private String[] data;
     private String answer = "";
     private int answerCount = 1;
     private int rightAnsCount = 0;
-    private Callable<String[]> getQuizData = null;
+    private Callable<String[]> getQuizData;
 
     private String wrapText(String text){
         String[] splited = text.split(" ");
@@ -89,6 +89,8 @@ public class SlangQuizCard extends JPanel {
         add(quizLabel, BorderLayout.PAGE_START);
         add(quizContent, BorderLayout.CENTER);
         add(countLabel, BorderLayout.PAGE_END);
+
+        addActionEvent();
     }
 
     private void popup(String msg){
@@ -114,22 +116,19 @@ public class SlangQuizCard extends JPanel {
         countLabel.setText("Right Answer: " + rightAnsCount + "/" + answerCount);
     }
 
-    public void addActionEvent(MapController map){
+    private void addActionEvent(){
         for (int i = 0; i < btns.length; i++) {
             JButton btn = btns[i];
             int finalI = i;
-            btn.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent actionEvent) {
-                    JButton btn = (JButton) actionEvent.getSource();
+            btn.addActionListener(actionEvent -> {
+                JButton btn1 = (JButton) actionEvent.getSource();
 
-                    if (data[finalI+1].equals(answer)) {
-                        popup("Amazing! You get it right!\n");
-                        rightAnsCount++;
-                    }
-                    else popup("Wrong answer!\nThe answer is " + answer);
-                    changeQuiz();
+                if (data[finalI+1].equals(answer)) {
+                    popup("Amazing! You get it right!\n");
+                    rightAnsCount++;
                 }
+                else popup("Wrong answer!\nThe answer is " + answer);
+                changeQuiz();
             });
         }
     }

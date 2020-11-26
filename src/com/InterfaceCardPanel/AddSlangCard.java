@@ -7,8 +7,6 @@ import com.SlangDictionary.MapController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class AddSlangCard extends JPanel {
     private JTextField newSlangInput = null;
@@ -51,50 +49,47 @@ public class AddSlangCard extends JPanel {
 
     public void addActionEvent(MapController map){
         JFrame frame = (JFrame) SwingUtilities.getRoot(this);
-        submitBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                String slang = newSlangInput.getText();
-                String mean = descInput.getText();
-                boolean succeed = false;
+        submitBtn.addActionListener(actionEvent -> {
+            String slang = newSlangInput.getText();
+            String mean = descInput.getText();
+            boolean succeed = false;
 
-                if (slang.equals("") || mean.equals("")){
-                    JOptionPane.showMessageDialog(frame,
-                            "Input is not supposed to be empty!",
-                            "Empty error",
-                            JOptionPane.ERROR_MESSAGE);
+            if (slang.equals("") || mean.equals("")){
+                JOptionPane.showMessageDialog(frame,
+                        "Input is not supposed to be empty!",
+                        "Empty error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+            else {
+                boolean res = map.hasKey(slang);
+                System.out.print(map.getDefinition(slang));
+
+                if (res){
+                    int c = JOptionPane.showConfirmDialog(
+                            frame,
+                            "This word is existed\nOverwrite?",
+                            "Confirmation",
+                            JOptionPane.YES_NO_OPTION);
+                    if (c == JOptionPane.YES_OPTION){
+                        succeed = map.addSlang(slang, mean);
+                    }
                 }
                 else {
-                    boolean res = map.hasKey(slang);
-                    System.out.print(map.getDefinition(slang));
+                    succeed = map.addSlang(slang, mean);
+                }
+            }
 
-                    if (res){
-                        int c = JOptionPane.showConfirmDialog(
-                                frame,
-                                "This word is existed\nOverwrite?",
-                                "Confirmation",
-                                JOptionPane.YES_NO_OPTION);
-                        if (c == JOptionPane.YES_OPTION){
-                            succeed = map.addToExFile(slang, mean);
-                        }
-                    }
-                    else {
-                        succeed = map.addToExFile(slang, mean);
-                    }
-                }
-
-                if (succeed){
-                    JOptionPane.showMessageDialog(frame,
-                            "Successfully add this word",
-                            "Status",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-                else{
-                    JOptionPane.showMessageDialog(frame,
-                            "Add word failed! Please try again",
-                            "Status",
-                            JOptionPane.ERROR_MESSAGE);
-                }
+            if (succeed){
+                JOptionPane.showMessageDialog(frame,
+                        "Successfully add this word",
+                        "Status",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+            else{
+                JOptionPane.showMessageDialog(frame,
+                        "Add word failed! Please try again",
+                        "Status",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
     }

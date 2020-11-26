@@ -11,7 +11,7 @@ import java.awt.event.ComponentEvent;
 import java.util.concurrent.Callable;
 
 public class HistoryCard extends JPanel {
-    private JList<String> list = null;
+    private JList<String> list;
     DefaultListModel<String> model = new DefaultListModel<>();
 
     public HistoryCard(Callable<String[]> loadHistoryFunction){
@@ -86,7 +86,7 @@ class MyCellRenderer extends JLabel implements ListCellRenderer<Object> {
         } else {
             background = Color.WHITE;
             foreground = Color.BLACK;
-        };
+        }
 
         setBackground(background);
         setForeground(foreground);

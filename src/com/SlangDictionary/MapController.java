@@ -4,30 +4,30 @@ package com.SlangDictionary;/*
 */
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class MapController {
     public static final String ASSETS_FILES_BASE_TXT = "./assets/files/base.txt";
     public static final String ASSETS_FILES_EX_TXT = "./assets/files/ex.txt";
     public static final String FILE_HEADER = "Slang`Meaning";
-    private ArrayList<String> history = null;
+    private final ArrayList<String> history;
     private static HashMap<String, String> map = null;
     private static ArrayList<String> keys = null;
 
     private static HashMap <String, ArrayList<String>> defList = null;
 
-    public void readDictionary() throws IOException {
+    public void readDictionary(){
         map = new HashMap<>();
         defList = new HashMap<>();
         keys = new ArrayList<>();
         try {
             FileInputStream baseIn = new FileInputStream(ASSETS_FILES_BASE_TXT);
-            Scanner baseSc = new Scanner(baseIn, "UTF-8");
+            Scanner baseSc = new Scanner(baseIn, StandardCharsets.UTF_8);
             FileInputStream exIn = new FileInputStream(ASSETS_FILES_EX_TXT);
-            Scanner exSc = new Scanner(exIn, "UTF-8");
+            Scanner exSc = new Scanner(exIn, StandardCharsets.UTF_8);
 
             baseSc.nextLine();
             while (baseSc.hasNextLine()) {
@@ -80,12 +80,8 @@ public class MapController {
 
     MapController(){
         history = new ArrayList<>();
-        try{
-            readDictionary();
-            System.out.print(defList.size());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        readDictionary();
+        System.out.print(defList.size());
     }
 
     private void addToDefList(String slang, String def){
@@ -135,6 +131,24 @@ public class MapController {
         return "";
     }
 
+    public String[] getSlangWordsByDef(String keyword){
+        String[] keys = keyword.toLowerCase().split(" ");
+        Set<String> retainSet = null;
+        for (String key : keys) {
+            if (!defList.containsKey(key)) return null;
+            Set<String> slangs = new HashSet<>((defList.get(key)));
+
+            if (retainSet != null) retainSet.retainAll(slangs);
+            else retainSet = slangs;
+        }
+        System.out.print(retainSet);
+
+        //history.add(slang + " - " + "Not found");
+        String[] result = new String[retainSet.size()];
+        retainSet.toArray(result);
+        return result;
+    }
+
     public String getDefinition(String slang){
         String key = slang.toLowerCase();
         return hasKey(key) ? map.get(key) : "";
@@ -169,15 +183,20 @@ public class MapController {
         return true;
     }
 
-    public boolean addToExFile(String slang, String mean){
+    public boolean addSlang(String slang, String mean){
         String data = '\n' + slang + '`' + mean;
         String key = slang.toLowerCase();
 
         if (map.containsKey(key)){
             map.replace(key, mean);
             keys.add(key);
+            removeFromDefList(slang, mean);
+            addToDefList(slang,mean);
         }
-        else map.put(key, mean);
+        else {
+            addToDefList(slang,mean);
+            map.put(key, mean);
+        }
 
         return fileWriteHelper(data);
     }
@@ -185,6 +204,7 @@ public class MapController {
     public boolean removeAWord(String slang){
         slang = slang.toLowerCase();
         if (!map.containsKey(slang)) return false;
+        removeFromDefList(slang, map.get(slang));
         keys.remove(slang);
         map.remove(slang);
         return fileWriteHelper('\n'+ slang +"`~");

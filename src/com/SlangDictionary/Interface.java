@@ -6,6 +6,8 @@ package com.SlangDictionary;/*
 import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 import com.InterfaceCardPanel.*;
 
@@ -25,10 +27,36 @@ public class Interface {
     private static MapController map = null;
 
     public static void addSearchBySlangCard(Container pane) {
-        SearchBySlangCard card = new SearchBySlangCard();
-        card.setMapController(map);
+        SearchCard card = new SearchCard(true);
+        Function<String, String> getDefFn = (s) -> {
+            return map.getDefinitionWithRecord(s);
+        } ;
+        Callable<String[]> getRandomValuesFn = () ->{
+           String[] result = new String[2];
+           result[0] = map.getRandomKeys(1)[0];
+           result[1] = map.getDefinition(result[0]);
+           return result;
+        };
+        card.setMapController(getDefFn, getRandomValuesFn);
 
         pane.add(card, buttonLabels[0]);
+    }
+
+    public static void addSearchByDefCard(Container pane) {
+        SearchCard card = new SearchCard(false);
+        Function<String, String> getDefFn = (s) -> {
+            String[] keys = map.getSlangWordsByDef(s);
+            if (keys == null) return "";
+            StringBuilder result = new StringBuilder();
+            for (String key : keys) {
+                String temp = String.format("+ <b>%s</b> - %s <br/>", key, map.getDefinition(key));
+                result.append(temp);
+            }
+            return "<html>" + result + "</html>";
+        };
+        card.setMapController(getDefFn, null);
+
+        pane.add(card, buttonLabels[1]);
     }
 
     public static void addHistoryCard(Container panel){
@@ -66,7 +94,6 @@ public class Interface {
             return data;
         });
 
-        card.addActionEvent(map);
         pane.add(card, buttonLabels[5]);
     }
 
@@ -81,7 +108,6 @@ public class Interface {
             return data;
         });
 
-        card.addActionEvent(map);
         pane.add(card, buttonLabels[6]);
     }
 
@@ -150,6 +176,7 @@ public class Interface {
         sidebar.add(resetBtn);
 
         addSearchBySlangCard(mainPanel);
+        addSearchByDefCard(mainPanel);
         addHistoryCard(mainPanel);
         addAddingNewSlangCard(mainPanel);
         addEditNewSlangCard(mainPanel);

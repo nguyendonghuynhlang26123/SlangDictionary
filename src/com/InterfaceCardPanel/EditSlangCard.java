@@ -7,16 +7,14 @@ import com.SlangDictionary.MapController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class EditSlangCard extends JPanel {
-    private JTextField slangInput = null;
-    private JTextArea descInput = null;
-    private JButton inputBtn = null;
-    private JButton submitBtn = null;
-    private JButton deleteBtn = null;
-    private JPanel descPanel = null;
+    private JTextField slangInput;
+    private JTextArea descInput;
+    private JButton inputBtn;
+    private JButton submitBtn;
+    private JButton deleteBtn;
+    private JPanel descPanel;
 
     public EditSlangCard(){
         setLayout(new BorderLayout());
@@ -75,88 +73,79 @@ public class EditSlangCard extends JPanel {
 
     public void addActionEvent(MapController map){
         JFrame frame = (JFrame) SwingUtilities.getRoot(this);
-        inputBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                String slang = slangInput.getText();
-                if (map.hasKey(slang)) {
-                    descInput.setText(map.getDefinition(slang));
+        inputBtn.addActionListener(actionEvent -> {
+            String slang = slangInput.getText();
+            if (map.hasKey(slang)) {
+                descInput.setText(map.getDefinition(slang));
+                toggle();
+            }
+            else{
+                JOptionPane.showMessageDialog(frame,
+                        "Cannot find this word!",
+                        "ERROR",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        submitBtn.addActionListener(actionEvent -> {
+            String slang = slangInput.getText();
+            String mean = descInput.getText();
+            if (map.getDefinition(slang).equals(mean)) {
+                JOptionPane.showMessageDialog(frame,
+                        "Detect no change in meaning!",
+                        "Status",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            int c = JOptionPane.showConfirmDialog(
+                    frame,
+                    "Update this word?",
+                    "Confirmation",
+                    JOptionPane.YES_NO_OPTION);
+            if (c == JOptionPane.YES_OPTION){
+                boolean succeed = map.addSlang(slang, mean);
+
+                if (succeed) {
+                    JOptionPane.showMessageDialog(frame,
+                            "Successfully update this word",
+                            "Status",
+                            JOptionPane.INFORMATION_MESSAGE);
                     toggle();
                 }
-                else{
+                else {
                     JOptionPane.showMessageDialog(frame,
-                            "Cannot find this word!",
-                            "ERROR",
+                            "Failed to update this word!! Please try again",
+                            "Status",
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
-        submitBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                String slang = slangInput.getText();
-                String mean = descInput.getText();
-                if (map.getDefinition(slang).equals(mean)) {
+        deleteBtn.addActionListener(actionEvent -> {
+            String slang = slangInput.getText();
+
+            int c = JOptionPane.showConfirmDialog(
+                    frame,
+                    "Delete this word?",
+                    "Confirmation",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.ERROR_MESSAGE);
+            if (c == JOptionPane.YES_OPTION){
+                boolean succeed = map.removeAWord(slang);
+
+                if (succeed) {
                     JOptionPane.showMessageDialog(frame,
-                            "Detect no change in meaning!",
+                            "Successfully delete this word",
                             "Status",
                             JOptionPane.INFORMATION_MESSAGE);
-                    return;
+                    toggle();
                 }
-
-                int c = JOptionPane.showConfirmDialog(
-                        frame,
-                        "Update this word?",
-                        "Confirmation",
-                        JOptionPane.YES_NO_OPTION);
-                if (c == JOptionPane.YES_OPTION){
-                    boolean succeed = map.addToExFile(slang, mean);
-
-                    if (succeed) {
-                        JOptionPane.showMessageDialog(frame,
-                                "Successfully update this word",
-                                "Status",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        toggle();
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(frame,
-                                "Failed to update this word!! Please try again",
-                                "Status",
-                                JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            }
-        });
-
-        deleteBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                String slang = slangInput.getText();
-
-                int c = JOptionPane.showConfirmDialog(
-                        frame,
-                        "Delete this word?",
-                        "Confirmation",
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.ERROR_MESSAGE);
-                if (c == JOptionPane.YES_OPTION){
-                    boolean succeed = map.removeAWord(slang);
-
-                    if (succeed) {
-                        JOptionPane.showMessageDialog(frame,
-                                "Successfully delete this word",
-                                "Status",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        toggle();
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(frame,
-                                "Failed to delete this word!! Please try again",
-                                "Status",
-                                JOptionPane.ERROR_MESSAGE);
-                    }
+                else {
+                    JOptionPane.showMessageDialog(frame,
+                            "Failed to delete this word!! Please try again",
+                            "Status",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

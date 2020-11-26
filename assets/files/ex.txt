@@ -1,1 +1,4 @@
 Slang`Meaning
+t`test is fun
+t`test is not fun
+t`~
