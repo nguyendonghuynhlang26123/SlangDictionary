@@ -30,6 +30,7 @@ public class Interface {
         SearchCard card = new SearchCard(true);
         Function<String, String> getDefFn = (s) -> {
             String def = map.getDefinitionWithRecord(s);
+            if (def.equals("")) return "";
             String result = String.join("<br/>+", def.split("\\|"));
             return "<html>+" + result + "</html>" ;
         } ;

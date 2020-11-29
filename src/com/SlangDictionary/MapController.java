@@ -213,6 +213,7 @@ public class MapController {
             FileOutputStream fout = new FileOutputStream(ASSETS_FILES_EX_TXT, false);
             fout.write(FILE_HEADER.getBytes(), 0, FILE_HEADER.length());
             fout.close();
+            readDictionary();
         } catch (IOException e) {
             e.printStackTrace();
             return false;
