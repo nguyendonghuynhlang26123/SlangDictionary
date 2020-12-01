@@ -5,6 +5,7 @@ package com.InterfaceCardPanel;/*
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
@@ -13,6 +14,10 @@ public class SearchCard extends JPanel {
     private JButton inputBtn = null;
     private JButton randomBtn = null;
     private JLabel definition = null;
+    //private final String searchIcon = "./assets/icons/ic_search.png";
+    //private final String randomIcon = "./assets/icons/ic_dice.png";
+    private final URL searchIcon = getClass().getClassLoader().getResource("icons/ic_search.png");
+    private final URL randomIcon = getClass().getClassLoader().getResource("icons/ic_dice.png");
 
     public SearchCard(boolean hasRandom){
         setLayout(new BorderLayout());
@@ -23,14 +28,14 @@ public class SearchCard extends JPanel {
         textInput.setFont(new Font("SF Mono", Font.PLAIN,18));
         JLabel inputLabel = new JLabel("Input keyword: ");
         inputBtn = new JButton();
-        inputBtn.setIcon(new ImageIcon("./assets/icons/ic_search.png"));
+        inputBtn.setIcon(new ImageIcon(searchIcon));
         inputBtn.setPreferredSize(new Dimension(50,26));
         inputPanel.add(inputLabel);
         inputPanel.add(textInput);
         inputPanel.add(inputBtn);
         if (hasRandom){
             randomBtn = new JButton();
-            randomBtn.setIcon(new ImageIcon("./assets/icons/ic_dice.png"));
+            randomBtn.setIcon(new ImageIcon(randomIcon));
             randomBtn.setPreferredSize(new Dimension(50,26));
             randomBtn.setToolTipText("Randomly generate an icon");
             inputPanel.add(randomBtn);

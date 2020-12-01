@@ -3,15 +3,13 @@ package com.SlangDictionary;/*
     @date 11/19/20
 */
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
 import java.util.*;
 
 public class MapController {
-    public static final String ASSETS_FILES_BASE_TXT = "./assets/files/base.txt";
-    public static final String ASSETS_FILES_EX_TXT = "./assets/files/ex.txt";
+    public static final String ASSETS_FILES_BASE_TXT = "/files/base.txt";
+    public static final String ASSETS_FILES_EX_TXT = "./ex.txt";
+
     public static final String FILE_HEADER = "Slang`Meaning";
     private final ArrayList<String> history;
     private static HashMap<String, String> map = null;
@@ -23,64 +21,83 @@ public class MapController {
         map = new HashMap<>();
         defList = new HashMap<>();
         keys = new ArrayList<>();
+        InputStream inBase, inEx;
+        BufferedReader readerBase, readerEx;
+
         try {
-            FileInputStream baseIn = new FileInputStream(ASSETS_FILES_BASE_TXT);
-            Scanner baseSc = new Scanner(baseIn, StandardCharsets.UTF_8);
-            FileInputStream exIn = new FileInputStream(ASSETS_FILES_EX_TXT);
-            Scanner exSc = new Scanner(exIn, StandardCharsets.UTF_8);
+            inBase = getClass().getResourceAsStream(ASSETS_FILES_BASE_TXT);
+            readerBase = new BufferedReader(new InputStreamReader(inBase));
 
-            baseSc.nextLine();
-            while (baseSc.hasNextLine()) {
-                String line = baseSc.nextLine();
+            inEx = new FileInputStream(ASSETS_FILES_EX_TXT);
+            readerEx = new BufferedReader(new InputStreamReader(inEx));
+
+            String line;
+            readerBase.readLine();
+            while ((line = readerBase.readLine()) != null) {
                 String[] splited = line.split("`", 0);
 
                 if (splited.length == 2) {
-                    keys.add(splited[0].toLowerCase());
-                    map.put(splited[0].toLowerCase(), splited[1]);
-                    addToDefList(splited[0],splited[1]);
+                    String key = splited[0].toLowerCase();
+                    String value = splited[1];
+                    keys.add(key);
+                    map.put(key, value);
+                    addToDefList(key,value);
                 }
+                else System.out.println("INVALID LINE: " + line);
+
             }
 
-            if (baseSc.ioException() != null) {
-                throw baseSc.ioException();
-            }
-
-            exSc.nextLine();
-            while (exSc.hasNextLine()) {
-                String line = exSc.nextLine();
+            readerEx.readLine();
+            while ((line = readerEx.readLine()) != null) {
                 String[] splited = line.split("`", 0);
 
                 if (splited.length == 2) {
-                    if (map.containsKey(splited[0]) && !splited[1].equals("~")){
-                        removeFromDefList(splited[0],map.get(splited[0]));
-                        addToDefList(splited[0], splited[1]);
-                        map.replace(splited[0].toLowerCase(), splited[1]);
+                    String key = splited[0].toLowerCase();
+                    String value = splited[1];
+
+                    if (map.containsKey(key)){
+                        //Test`~ => Test slang word is deleted
+                        if (value.equals("~")) {
+                            map.remove(key);
+                            removeFromDefList(key, map.get(key));
+                        }
+                        //Test`abc and map has already had this word => Replace def list
+                        else{
+                            removeFromDefList(key,map.get(key));
+                            addToDefList(key, value);
+                            map.replace(key, value);
+                        }
                     }
-                    else if (map.containsKey(splited[0])){
-                        map.remove(splited[0]);
-                        removeFromDefList(splited[0],map.get(splited[0]));
-                    }
-                    else{
-                        keys.add(splited[0].toLowerCase());
-                        map.put(splited[0].toLowerCase(), splited[1]);
-                        removeFromDefList(splited[0],map.get(splited[0]));
+                    //Test`abc and map does not have this word yet
+                    else {
+                        keys.add(key);
+                        map.put(key, value);
+                        addToDefList(key, value);
                     }
                 }
             }
-            if (exSc.ioException() != null){
-                throw exSc.ioException();
-            }
 
-            baseIn.close();
-            exIn.close();
+            inBase.close();
+            inEx.close();
         } catch (Exception error) {
-            System.out.print(error.getMessage());
+            System.out.print("EXCEPTION CAUTCH: ");
+            System.out.println(error.getMessage());
         }
     }
 
     MapController(){
         history = new ArrayList<>();
+        if (!(new File("./ex.txt")).exists()){
+            try {
+                createExFile();
+                System.out.print("Create ex file successfully");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else System.out.println("USING EXISTING EX FILE");
         readDictionary();
+        System.out.println(map.size() + " USING EX FILE: " +  ASSETS_FILES_EX_TXT);
     }
 
     private void addToDefList(String slang, String def){
@@ -126,7 +143,7 @@ public class MapController {
             return description;
         }
 
-        history.add(slang + " - " + "Not found");
+        history.add(slang + " - " + "Not found!");
         return "";
     }
 
@@ -134,16 +151,19 @@ public class MapController {
         String[] keys = keyword.toLowerCase().split(" ");
         Set<String> retainSet = null;
         for (String key : keys) {
-            if (!defList.containsKey(key)) return null;
+            if (!defList.containsKey(key)){
+                history.add(keyword + " - Not found!");
+                return null;
+            }
             Set<String> slangs = new HashSet<>((defList.get(key)));
 
             if (retainSet != null) retainSet.retainAll(slangs);
             else retainSet = slangs;
         }
 
-        //history.add(slang + " - " + "Not found");
         String[] result = new String[retainSet.size()];
         retainSet.toArray(result);
+        history.add(keyword + " - " + String.join(", ", result));
         return result;
     }
 
@@ -208,16 +228,21 @@ public class MapController {
         return fileWriteHelper('\n'+ slang +"`~");
     }
 
+    public void createExFile() throws IOException {
+        FileOutputStream fout = new FileOutputStream("./ex.txt");
+        fout.write(FILE_HEADER.getBytes(), 0, FILE_HEADER.length());
+        fout.close();
+    }
+
     public boolean resetExFile(){
         try {
-            FileOutputStream fout = new FileOutputStream(ASSETS_FILES_EX_TXT, false);
-            fout.write(FILE_HEADER.getBytes(), 0, FILE_HEADER.length());
-            fout.close();
+            createExFile();
             readDictionary();
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
+
         return true;
     }
 }

@@ -192,7 +192,7 @@ public class Interface {
 
     private static void createAndShowGUI(){
         //JFrame.setDefaultLookAndFeelDecorated(true);
-        JFrame frame = new JFrame("District Interface");
+        JFrame frame = new JFrame("Slang Dictionary");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         addComponentsToPane(frame.getContentPane());

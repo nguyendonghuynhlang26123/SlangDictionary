@@ -1,1 +1,21 @@
-Yeu cau ve 
+Ten: Nguyen Dang Huynh Long
+18CLC1 - 18127136
+
+video demo: https://youtu.be/xMUQeqhBLM4
+
+Github: https://github.com/nguyendonghuynhlang26123/SlangDictionary
+So lan commit: 18 lan
+
+Chuc nang 1: Search bang Slang word - 10d
+Chuc nang 2: Search bang Definition - 8d (Su dung hash map voi key la cac tu trong nghia cua slang word do
+=> O(1) khi truy xuat nhung lai rat ton RAM)
+Chuc nang 3: Search history - 10d
+Chuc nang 4: Add slang word - 10d
+Chuc nang 5: Edit slang word - 10d
+Chuc nang 6: Delete slang word - 10d (Co co che confirm)
+Chuc nang 7: Reset - 10d
+Chuc nang 8: Slang quiz 1 (Cho Slang tra loi nghia cua tu do)
+Chuc nang 9: Slang quiz 2 (Cho nghia tra loi slang ung voi nghia do)
+Chuc nang 10: Random slang - 10d
+=> Tong ket 98d
+
